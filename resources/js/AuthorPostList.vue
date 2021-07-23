@@ -1,68 +1,61 @@
 <template>
-    <div class="'container mx-auto px-4 w-full md:w-3/4 lg:w-3/5 xl:w-1/2 mt-20">
+    <div class="container mx-auto px-4 w-full md:w-3/4 lg:w-3/5 xl:w-1/2 my-20">
+        <h2 class="text-4xl "><router-link :to="{ name:'index' }" class="text-gray-600 hover:underline">All Posts</router-link><span class="text-gray-600">/</span>
+            {{ user.name }}</h2>
+
         <div v-if="$apollo.loading"><div class="loadingio-spinner-spinner-2weexdizmdn"><div class="ldio-1ie5z3jpasw">
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
         </div>
         </div>
         </div>
         <div v-else>
-            <div class="text-lg text-gray-600">
-                By <router-link :to="{name:'author', params:{id: post.author.id}}" class="underline">{{ post.author.name }}</router-link> in <router-link :to="{name:'topic', params:{slug: post.topic.slug}}" class="underline hover:text-black">{{ post.topic.name }}</router-link> &nbsp; {{ post.created_at | timeago}}
-            </div>
-            <h1 class="text-5xl mt-10 font-bold mb-12">{{ post.title }}</h1>
-
-            <p class="text-gray-700 pb-3 mb-12 whitespace-pre-line">{{ post.content }}</p>
-
-            <div class="mb-24 flex">
-                <div class="mr-6">
-                    <img :src="'/storage/faces/' + post.author.avatar" alt="Author avatar" class="w-16 h-16 rounded-full">
-                </div>
-                <div class="flex flex-col justify-center">
-                    <div class="text-xl text-gray-600">Written by <router-link :to="{name:'author', params:{id: post.author.id}}" class="underline">{{ post.author.name }}</router-link></div>
-                    <div class="text-gray-600">Published in <router-link :to="{name:'topic', params:{slug: post.topic.slug}}" class="underline hover:text-black">{{ post.topic.name }}</router-link> &nbsp; on {{ post.created_at | longDate }}</div>
-                </div>
-            </div>
+            <PostListitem v-for="post in user.posts" :key="post.id" :post="post" class="mt-10" />
         </div>
     </div>
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import gql from 'graphql-tag';
+import PostListitem from "./components/PostListitem";
 
 export default {
-    name: "Post",
+    components: {
+        PostListitem,
+    },
     apollo: {
-        post: {
-            query: gql`query ($id: ID!) {
-                post(id: $id) {
-                    id
-                    title
-                    lead
-                    content
-                    created_at
-                    author {
-                       id
-                       name
-                       avatar
-                    }
-                    topic {
+        user: {
+            query: gql`
+                query($id: ID!) {
+                    user(id: $id) {
                         id
                         name
-                        slug
+                        posts {
+                            id
+                            title
+                            lead
+                            content
+                            author {
+                                id
+                                name
+                                avatar
+                            }
+                            topic {
+                                id
+                                name
+                                slug
+                            }
+                        }
                     }
                 }
-            }`,
+            `,
             variables() {
                 return {
                     id: this.$route.params.id
-                }
-            },
-            error() {
-                this.$router.push({ name: "404" });
+                };
             }
         }
     }
-}
+};
 </script>
 
 <style scoped>
@@ -146,4 +139,3 @@ export default {
 }
 .ldio-1ie5z3jpasw div { box-sizing: content-box; }
 </style>
-

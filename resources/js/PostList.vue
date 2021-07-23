@@ -1,6 +1,6 @@
 <template>
     <div class="container mx-auto px-4 w-full md:w-3/4 lg:w-3/5 xl:w-1/2 my-20">
-        <h2 class="text-4xl ">All Posts</h2>
+        <h2 class="text-4xl "><router-link :to="{ name:'index' }" class="text-gray-600 hover:underline">All Posts</router-link></h2>
         <div v-if="$apollo.loading"><div class="loadingio-spinner-spinner-2weexdizmdn"><div class="ldio-1ie5z3jpasw">
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
         </div>
@@ -15,6 +15,7 @@
 <script>
 import gql from 'graphql-tag';
 import PostListitem from "./components/PostListitem";
+
 export default {
     components: {
         PostListitem,
@@ -23,9 +24,20 @@ export default {
         posts: gql`
         {
             posts {
-            id,
-            title,
+            id
+            title
             lead
+            created_at
+             author {
+              id
+              name
+              avatar
+            }
+            topic {
+              id
+              name
+              slug
+            }
             }
         }
         `
